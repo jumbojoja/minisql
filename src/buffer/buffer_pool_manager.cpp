@@ -64,6 +64,11 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id) {
     return &pages_[frame_id_new];
   }
   //return nullptr;
+  auto i = page_table_.find(page_id);
+  Page *page = &pages_[i->second];
+  replacer_->Pin(i->second);
+  page->pin_count_++;
+  return page;
 }
 
 /**
@@ -100,6 +105,7 @@ Page *BufferPoolManager::NewPage(page_id_t &page_id) {
   page->pin_count_ = 1;
   page->ResetMemory();
   page_id = AllocatePage();
+  page->page_id_ = page_id;
   page_table_.emplace(page_id, frame_id_new);
   return page;
   
