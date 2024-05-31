@@ -50,7 +50,7 @@ uint32_t Row::DeserializeFrom(char *buf, Schema *schema) {
   uint32_t byte_count = ceil(num * 1.0/8);
   char* null_bitmaps = new char[byte_count];
   memcpy(null_bitmaps, buf + SerializedSize, byte_count*sizeof(char));
-  memcpy(null_bitmaps, buf + SerializedSize, byte_count*sizeof(char));
+  //memcpy(null_bitmaps, buf + SerializedSize, byte_count*sizeof(char));
   SerializedSize += byte_count*sizeof(char);
   for(uint32_t i = 0; i < num; i++){
     Field *temp;
