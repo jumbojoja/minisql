@@ -9,6 +9,7 @@
 static const std::string db_name = "bp_tree_insert_test.db";
 
 TEST(BPlusTreeTests, SampleTest) {
+  //std::cout << "hello"<<endl;
   // Init engine
   DBStorageEngine engine(db_name);
   std::vector<Column *> columns = {
@@ -20,6 +21,7 @@ TEST(BPlusTreeTests, SampleTest) {
   TreeFileManagers mgr("tree_");
   // Prepare data
   const int n = 2000;
+  //const int n = 2000;
   vector<GenericKey *> keys;
   vector<RowId> values;
   vector<GenericKey *> delete_seq;
@@ -41,11 +43,13 @@ TEST(BPlusTreeTests, SampleTest) {
   for (int i = 0; i < n; i++) {
     kv_map[keys[i]] = values[i];
   }
+  printf("hello1\n");
   // Insert data
   for (int i = 0; i < n; i++) {
     tree.Insert(keys[i], values[i]);
   }
   ASSERT_TRUE(tree.Check());
+  printf("hello2\n");
   // Print tree
   tree.PrintTree(mgr[0], table_schema);
   // Search keys
@@ -55,11 +59,13 @@ TEST(BPlusTreeTests, SampleTest) {
     ASSERT_EQ(kv_map[keys_copy[i]], ans[i]);
   }
   ASSERT_TRUE(tree.Check());
+  printf("hello3\n");
   // Delete half keys
   for (int i = 0; i < n / 2; i++) {
     tree.Remove(delete_seq[i]);
   }
   tree.PrintTree(mgr[1], table_schema);
+  printf("hello4\n");
   // Check valid
   ans.clear();
   for (int i = 0; i < n / 2; i++) {
@@ -69,4 +75,5 @@ TEST(BPlusTreeTests, SampleTest) {
     ASSERT_TRUE(tree.GetValue(delete_seq[i], ans));
     ASSERT_EQ(kv_map[delete_seq[i]], ans[ans.size() - 1]);
   }
+  printf("hello4\n");
 }

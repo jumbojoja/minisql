@@ -11,7 +11,9 @@ class TableMetadata {
   friend class TableInfo;
 
  public:
-  ~TableMetadata() { delete schema_; }
+  ~TableMetadata() { 
+    //delete schema_; 
+  }
 
   uint32_t SerializeTo(char *buf) const;
 
