@@ -95,7 +95,8 @@ int BPlusTreePage::GetMinSize() const {
  * TODO: Student Implement
  */
 page_id_t BPlusTreePage::GetParentPageId() const {
-  return INVALID_PAGE_ID;
+  return parent_page_id_;
+  //return INVALID_PAGE_ID;
 }
 
 void BPlusTreePage::SetParentPageId(page_id_t parent_page_id) {

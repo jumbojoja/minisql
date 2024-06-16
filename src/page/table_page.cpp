@@ -25,6 +25,7 @@ bool TablePage::InsertTuple(Row &row, Schema *schema, Txn *txn, LockManager *loc
       break;
     }
   }
+
   if (i == GetTupleCount() && GetFreeSpaceRemaining() < serialized_size + SIZE_TUPLE) {
     return false;
   }
@@ -38,6 +39,8 @@ bool TablePage::InsertTuple(Row &row, Schema *schema, Txn *txn, LockManager *loc
   SetTupleSize(i, serialized_size);
   // Set rid
   row.SetRowId(RowId(GetTablePageId(), i));
+
+  /*如果超过了当前的tuple数，新建一个tuple,新建操作之前已经做完了，这里给tuple数加一即可*/
   if (i == GetTupleCount()) {
     SetTupleCount(GetTupleCount() + 1);
   }
@@ -87,6 +90,8 @@ bool TablePage::UpdateTuple(Row &new_row, Row *old_row, Schema *schema, Txn *txn
   ASSERT(tuple_size == read_bytes, "Unexpected behavior in tuple deserialize.");
   uint32_t free_space_pointer = GetFreeSpacePointer();
   ASSERT(tuple_offset >= free_space_pointer, "Offset should appear after current free space position.");
+
+  /*这种memmove指令画图理解会比较方便*/
   memmove(GetData() + free_space_pointer + tuple_size - serialized_size, GetData() + free_space_pointer,
           tuple_offset - free_space_pointer);
   SetFreeSpacePointer(free_space_pointer + tuple_size - serialized_size);
@@ -117,6 +122,7 @@ void TablePage::ApplyDelete(const RowId &rid, Txn *txn, LogManager *log_manager)
   uint32_t free_space_pointer = GetFreeSpacePointer();
   ASSERT(tuple_offset >= free_space_pointer, "Free space appears before tuples.");
 
+  /*下面这行设计巧妙，结合page的结构理解*/
   memmove(GetData() + free_space_pointer + tuple_size, GetData() + free_space_pointer,
           tuple_offset - free_space_pointer);
   SetFreeSpacePointer(free_space_pointer + tuple_size);
@@ -127,9 +133,13 @@ void TablePage::ApplyDelete(const RowId &rid, Txn *txn, LogManager *log_manager)
   for (uint32_t i = 0; i < GetTupleCount(); ++i) {
     uint32_t tuple_offset_i = GetTupleOffsetAtSlot(i);
     if (GetTupleSize(i) != 0 && tuple_offset_i < tuple_offset) {
+      /*只需要更改所有在被删除tuple位置之前的tuple的偏移量即可*/
       SetTupleOffsetAtSlot(i, tuple_offset_i + tuple_size);
     }
   }
+
+  // /*add by liang 06.05
+  //  *这个函数实现的时候是遵循教材来的，所以在删除一个tuple时没有将这个tuple的offset信息和size信息删除，而是改为了0*/
 }
 
 void TablePage::RollbackDelete(const RowId &rid, Txn *txn, LogManager *log_manager) {
