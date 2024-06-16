@@ -53,7 +53,7 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id) {
       free_list_.pop_front();
     }else{
       if(!replacer_->Victim(&frame_id_new)){
-        LOG(WARNING)<<"Unkown mistake" << std::endl;
+        LOG(WARNING)<<"Unknown mistake" << std::endl;
       }
     }
     if(pages_[frame_id_new].is_dirty_){

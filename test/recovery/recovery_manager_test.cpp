@@ -64,7 +64,7 @@ TEST_F(RecoveryManagerTest, RecoveryTest) {
   ASSERT_EQ(db["B"], 1000);
   ASSERT_EQ(db["C"], 800);
   ASSERT_EQ(db["D"], 30000);
-
+  // std::cout << std::to_string(LogRec::prev_lsn_map_.at(0))<< std::to_string(LogRec::prev_lsn_map_.at(1)) << std::to_string(LogRec::prev_lsn_map_.at(2));
   recovery_mgr.UndoPhase();
   ASSERT_EQ(db["A"], 2000);
   ASSERT_EQ(db["B"], 1000);

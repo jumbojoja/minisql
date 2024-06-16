@@ -82,7 +82,7 @@ class Schema {
 
  private:
   static constexpr uint32_t SCHEMA_MAGIC_NUM = 200715;
-  std::vector<Column *> columns_;
+  std::vector<Column *> columns_; /*一个schema由多个columns构成*/
   bool is_manage_ = false; /** if false, don't need to delete pointer to column */
 };
 

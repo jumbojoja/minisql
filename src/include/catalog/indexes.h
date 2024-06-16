@@ -67,6 +67,10 @@ class IndexInfo {
     // Step1: init index metadata and table info
     // Step2: mapping index key to key schema
     // Step3: call CreateIndex to create the index
+    // meta_data_ = meta_data;
+    // std::vector<uint32_t> attrs = new ;
+    // key_schema_ = table_info->GetSchema()->ShallowCopySchema(table_info->GetSchema(),new vector<uint32_t> attrs);
+
     ASSERT(false, "Not Implemented yet.");
   }
 

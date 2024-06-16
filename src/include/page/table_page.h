@@ -101,9 +101,9 @@ class TablePage : public Page {
 
  private:
   static_assert(sizeof(page_id_t) == 4);
-  static constexpr uint64_t DELETE_MASK = (1U << (8 * sizeof(uint32_t) - 1));
+  static constexpr uint64_t DELETE_MASK = (1U << (8 * sizeof(uint32_t) - 1));  /*在tuple_size的最高位上标一个1表示删除标记*/
   static constexpr size_t SIZE_TABLE_PAGE_HEADER = 24;
-  static constexpr size_t SIZE_TUPLE = 8;
+  static constexpr size_t SIZE_TUPLE = 8;     /*8==tuple_offset(4)+tuple_size(4)*/
   static constexpr size_t OFFSET_PREV_PAGE_ID = 8;
   static constexpr size_t OFFSET_NEXT_PAGE_ID = 12;
   static constexpr size_t OFFSET_FREE_SPACE = 16;
