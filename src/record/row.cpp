@@ -9,7 +9,7 @@ uint32_t Row::SerializeTo(char *buf, Schema *schema) const {
   // replace with your code here
   uint32_t SerializedSize = 0, count = 0;
   uint32_t field_count = GetFieldCount();
-  memcpy(buf, &field_count, sizeof(uint32_t));
+  memcpy(buf, &field_count, sizeof(uint32_t));  /*第一个被序列化的，本tuple有多少个field，4个字节*/
   SerializedSize += sizeof(uint32_t);
   if(field_count == 0){ //no fields
     return SerializedSize;
@@ -18,17 +18,23 @@ uint32_t Row::SerializeTo(char *buf, Schema *schema) const {
   char* null_bitmaps = new char[byte_count];
   memset(null_bitmaps, 0, byte_count);
   for(auto i = fields_.begin(); i != fields_.end(); i++){
+    /*这里用位运算去点bitmap了*/
     if(!((*i)->IsNull())){
       null_bitmaps[count/8] |= (1<<(7-(count%8)));
     }
     count++;
   }
-  memcpy(buf + SerializedSize, null_bitmaps, byte_count*sizeof(char));
+  memcpy(buf + SerializedSize, null_bitmaps, byte_count*sizeof(char));  /*第二个被序列化的，bitmap，字节数等于field数/8取上整 */
   SerializedSize += byte_count*sizeof(char);
   for(auto i = fields_.begin(); i != fields_.end(); i++){
     uint32_t tmp = (*i)->SerializeTo(buf + SerializedSize);
     SerializedSize += tmp;
   }
+  /* *  In memory:
+   * -------------------------------------------
+   * | Field Nums | Null bitmap | Field-1 | ... | Field-N |
+   * -------------------------------------------
+   */
   delete []null_bitmaps;
   return SerializedSize;
   //return 0;
@@ -49,7 +55,6 @@ uint32_t Row::DeserializeFrom(char *buf, Schema *schema) {
   }
   uint32_t byte_count = ceil(num * 1.0/8);
   char* null_bitmaps = new char[byte_count];
-  memcpy(null_bitmaps, buf + SerializedSize, byte_count*sizeof(char));
   memcpy(null_bitmaps, buf + SerializedSize, byte_count*sizeof(char));
   SerializedSize += byte_count*sizeof(char);
   for(uint32_t i = 0; i < num; i++){
@@ -93,6 +98,7 @@ uint32_t Row::GetSerializedSize(Schema *schema) const {
   for(auto i = fields_.begin(); i != fields_.end(); i++){
     num += (*i)->GetSerializedSize();
   }
+  /*回想一个row被序列化之后的结构即可理解。field数量字节数+bitmap字节数+所有field各自序列化之后的总字节数*/
   return sizeof(uint32_t) + ceil(GetFieldCount()*1.0/8) + num;
 }
 
