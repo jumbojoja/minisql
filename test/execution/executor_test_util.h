@@ -45,6 +45,7 @@ class ExecutorTest : public ::testing::Test {
                                      new Column("account", TypeId::kTypeFloat, 2, true, false)};
     auto schema = std::make_shared<Schema>(columns);
     catalog_01->CreateTable("table-1", schema.get(), txn_, table_info);
+    // cout << table_info->GetSchema()->GetColumn(0)->GetName() << endl;
     TableHeap *table_heap = table_info->GetTableHeap();
     for (int i = 0; i < 1000; i++) {
       int32_t len = RandomUtils::RandomInt(0, 64);
@@ -59,7 +60,11 @@ class ExecutorTest : public ::testing::Test {
     }
     // Create an executor context for our executors
     exec_ctx_ = std::make_unique<ExecuteContext>(txn_, db_test_->catalog_mgr_, db_test_->bpm_);
-
+    // cout << table_info->GetSchema()->GetColumn(0)->GetName() << endl;
+    // cout << table_info->GetSchema()->GetColumn(1)->GetName() << endl;
+    // cout << table_info->GetSchema()->GetColumn(2)->GetName() << endl;
+    // GetExecutorContext()->GetCatalog()->GetTable("table-1", table_info);
+    // cout << table_info->GetSchema()->GetColumn(2)->GetName() << endl;
     // Construct the executor engine for the test
     execution_engine_ = std::make_unique<ExecuteEngine>();
   }

@@ -14,10 +14,14 @@ uint32_t Schema::SerializeTo(char *buf) const {
   memcpy(buf + SerializedSize, &column_count, sizeof(uint32_t));
   SerializedSize += sizeof(uint32_t);
 
-  for(auto i = columns_.begin(); i != columns_.end(); i++){
-    column_count = (*i)->SerializeTo(buf + SerializedSize);
+  for(auto it : columns_) {
+    column_count = it->SerializeTo(buf + SerializedSize);
     SerializedSize += column_count;
   }
+  // for(auto i = columns_.begin(); i != columns_.end(); i++){
+  //   column_count = (*i)->SerializeTo(buf + SerializedSize);
+  //   SerializedSize += column_count;
+  // }
 
   memcpy(buf + SerializedSize, &is_manage_, sizeof(bool));
   SerializedSize += sizeof(bool);
@@ -27,6 +31,10 @@ uint32_t Schema::SerializeTo(char *buf) const {
 uint32_t Schema::GetSerializedSize() const {
   // replace with your code here
   uint32_t num = 0;
+
+  // for(auto it : columns_) {
+  //   num += it->GetSerializedSize();
+  // }
   for(auto i = columns_.begin(); i != columns_.end(); i++){
     num += (*i)->GetSerializedSize();
   }
@@ -43,7 +51,7 @@ uint32_t Schema::DeserializeFrom(char *buf, Schema *&schema) {
   memcpy(&SCHEMA_MAGIC_NUM_Read, buf, sizeof(uint32_t));
   SerializedSize += sizeof(uint32_t);
   if(SCHEMA_MAGIC_NUM_Read != SCHEMA_MAGIC_NUM){
-    LOG(ERROR)<<"DeserializedFrom function in schema is WRONG!" << std::endl;
+    LOG(ERROR)<<"Deserialized From function in schema is WRONG!" << std::endl;
   }
 
   uint32_t column_count;

@@ -1,5 +1,7 @@
 #include "record/column.h"
 
+#include <iostream>
+
 #include "glog/logging.h"
 
 Column::Column(std::string column_name, TypeId type, uint32_t index, bool nullable, bool unique)
@@ -45,6 +47,7 @@ uint32_t Column::SerializeTo(char *buf) const {
   SerializedSize += sizeof(uint32_t);
 
   uint32_t temp = name_.length();
+  // std::cout << temp << std::endl;
   memcpy(buf + SerializedSize, &temp, sizeof(uint32_t));
   SerializedSize += sizeof(uint32_t);
 
@@ -55,16 +58,16 @@ uint32_t Column::SerializeTo(char *buf) const {
   memcpy(buf + SerializedSize, &type_, sizeof(type_));
   SerializedSize += sizeof(type_);
 
-  memcpy(buf+SerializedSize,&len_,sizeof(uint32_t));
+  memcpy(buf + SerializedSize,&len_,sizeof(uint32_t));
   SerializedSize += sizeof(uint32_t);
 
-  memcpy(buf+SerializedSize,&table_ind_,sizeof(uint32_t));
+  memcpy(buf + SerializedSize,&table_ind_,sizeof(uint32_t));
   SerializedSize += sizeof(uint32_t);
 
-  memcpy(buf+SerializedSize,&nullable_,sizeof(bool));
+  memcpy(buf + SerializedSize,&nullable_,sizeof(bool));
   SerializedSize += sizeof(bool);
 
-  memcpy(buf+SerializedSize,&unique_,sizeof(bool));
+  memcpy(buf + SerializedSize,&unique_,sizeof(bool));
   SerializedSize += sizeof(bool);
   return SerializedSize;
 }

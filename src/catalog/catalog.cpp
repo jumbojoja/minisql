@@ -26,7 +26,7 @@ CatalogMeta *CatalogMeta::DeserializeFrom(char *buf) {
   // check valid
   uint32_t magic_num = MACH_READ_UINT32(buf);
   buf += 4;
-  //ASSERT(magic_num == CATALOG_METADATA_MAGIC_NUM, "Failed to deserialize catalog metadata from disk.");
+  ASSERT(magic_num == CATALOG_METADATA_MAGIC_NUM, "Failed to deserialize catalog metadata from disk.");
   // get table and index nums
   uint32_t table_nums = MACH_READ_UINT32(buf);
   buf += 4;
@@ -76,7 +76,7 @@ CatalogManager::CatalogManager(BufferPoolManager *buffer_pool_manager, LockManag
     next_table_id_ = 0;
     next_index_id_ = 0;
     Page * catalog_meta_page = buffer_pool_manager->FetchPage(CATALOG_META_PAGE_ID);
-    catalog_meta_->SerializeTo(catalog_meta_page->GetData());
+    catalog_meta_->SerializeTo(catalog_meta_page->GetData()); /*这里暂时不清楚为什么要序列化回去*/
     buffer_pool_manager->UnpinPage(CATALOG_META_PAGE_ID,true);
   }else{
     Page * catalog_meta_page = buffer_pool_manager->FetchPage(CATALOG_META_PAGE_ID);
@@ -281,6 +281,7 @@ dberr_t CatalogManager::DropTable(const string &table_name) {
   catalog_meta_->SerializeTo(catalog_meta_page->GetData());
   buffer_pool_manager_->UnpinPage(CATALOG_META_PAGE_ID,true);
   return DB_SUCCESS;
+  /*不知道next_table_id需不需要修改*/
   // ASSERT(false, "Not Implemented yet");
   //return DB_FAILED;
 }
@@ -296,15 +297,21 @@ dberr_t CatalogManager::DropIndex(const string &table_name, const string &index_
   if(index_map.find(index_name) == index_map.end()){
     return DB_INDEX_NOT_FOUND;
   }
+
+  /*找到了，需要先把它从map里面删除*/
   index_id_t index_id = index_map[index_name];
   index_names_[table_name].erase(index_name);
   indexes_.erase(index_id);
+  /*接下来修改目录元数据*/
   auto catalog_meta_page = buffer_pool_manager_->FetchPage(CATALOG_META_PAGE_ID);
   buffer_pool_manager_->DeletePage(catalog_meta_->index_meta_pages_[index_id]);
   catalog_meta_->index_meta_pages_.erase(index_id);
   catalog_meta_->SerializeTo(catalog_meta_page->GetData());
   buffer_pool_manager_->UnpinPage(CATALOG_META_PAGE_ID,true);
+
   return DB_SUCCESS;
+  /*不知道next_index_id需不需要修改*/
+
   // ASSERT(false, "Not Implemented yet");
   //return DB_FAILED;
 }

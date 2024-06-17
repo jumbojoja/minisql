@@ -11,9 +11,18 @@
 // SELECT id FROM table-1 WHERE id < 500
 TEST_F(ExecutorTest, SimpleSeqScanTest) {
   // Construct query plan
-  TableInfo *table_info;
+  TableInfo *table_info = nullptr;
   GetExecutorContext()->GetCatalog()->GetTable("table-1", table_info);
   const Schema *schema = table_info->GetSchema();
+  // //////////////////////////////////////////////////////////////
+  // cout<< schema->GetColumnCount() << endl;
+  // for(auto it : schema->GetColumns())
+  // {
+  //     cout << it->GetName() << endl;
+  //     cout << it->GetType() << endl;
+  //     cout << it->GetLength() << endl;
+  // }
+  // //////////////////////////////////////////////////////////////
   auto col_a = MakeColumnValueExpression(*schema, 0, "id");
   auto col_b = MakeColumnValueExpression(*schema, 0, "name");
   auto const500 = MakeConstantValueExpression(Field(kTypeInt, 500));
@@ -96,6 +105,7 @@ TEST_F(ExecutorTest, SimpleRawInsertTest) {
 
   // SELECT * FROM table-1 where id = 1001;
   const Schema *schema = table_info->GetSchema();
+
   auto col_a = MakeColumnValueExpression(*schema, 0, "id");
   auto const500 = MakeConstantValueExpression(Field(kTypeInt, 1001));
   auto predicate = MakeComparisonExpression(col_a, const500, "=");

@@ -5,6 +5,7 @@
  */
 uint32_t Row::SerializeTo(char *buf, Schema *schema) const {
   ASSERT(schema != nullptr, "Invalid schema before serialize.");
+  // std::cout << schema->GetColumnCount() << ", " << fields_.size() << std::endl;
   ASSERT(schema->GetColumnCount() == fields_.size(), "Fields size do not match schema's column size.");
   // replace with your code here
   uint32_t SerializedSize = 0, count = 0;

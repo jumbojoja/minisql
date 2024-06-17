@@ -1,7 +1,3 @@
-//
-// Created by njz on 2023/1/16.
-//
-
 #ifndef MINISQL_SEQ_SCAN_PLAN_H
 #define MINISQL_SEQ_SCAN_PLAN_H
 
